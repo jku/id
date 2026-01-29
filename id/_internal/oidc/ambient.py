@@ -302,7 +302,7 @@ def detect_gitlab(audience: str) -> str | None:
     return token
 
 
-def detect_circleci(audience: str) -> str | None:
+def detect_circleci(audience: str, root_issuer: bool = True) -> str | None:
     """
     Detect and return a CircleCI ambient OIDC credential.
 
@@ -321,17 +321,21 @@ def detect_circleci(audience: str) -> str | None:
     if shutil.which("circleci") is None:
         raise AmbientCredentialError("CircleCI: could not find `circleci` in the environment")
 
-    # See NOTE on `detect_buildkite` for why we silence these warnings.
     payload = json.dumps({"aud": audience})
+    cmd = ["circleci", "run", "oidc", "get", "--claims", payload]
+    if root_issuer:
+        cmd.append("--root-issuer")
+
+    # See NOTE on `detect_buildkite` for why we silence these warnings.
     process = subprocess.run(  # nosec B603, B607
-        ["circleci", "run", "oidc", "get", "--claims", payload],
+        cmd,
         capture_output=True,
         text=True,
     )
 
     if process.returncode != 0:
         raise AmbientCredentialError(
-            f"CircleCI: the `circleci` tool encountered an error: {process.stdout}"
+            f"CircleCI: the `circleci` tool encountered an error: {process.stderr}"
         )
 
     return process.stdout.strip()
