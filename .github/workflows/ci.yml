@@ -12,7 +12,7 @@ on:
 permissions: {}
 
 jobs:
-  test:
+  unit-test:
     strategy:
       matrix:
         conf:
@@ -46,11 +46,38 @@ jobs:
       - name: test
         run: make test TEST_ARGS="-vv --showlocals"
 
+  github-actions-test:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # for OIDC
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+        with:
+          python-version: "3.x"
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
+
+      - name: deps
+        run: pip install .
+
+      - name: Test id with GitHub Actions OIDC
+        shell: python
+        run: |
+          import id, json
+
+          # Make sure we get a token
+          token = id.detect_credential("my-audience")
+          assert token
+
   all-tests-pass:
     if: always()
 
     needs:
-      - test
+      - unit-test
 
     runs-on: ubuntu-latest
 
