@@ -7,14 +7,12 @@ on:
   pull_request:
   schedule:
     - cron: "0 12 * * *"
+  workflow_dispatch:
 
 permissions: {}
 
 jobs:
   test:
-    permissions:
-      # Needed to access the workflow's OIDC identity.
-      id-token: write
     strategy:
       matrix:
         conf:
