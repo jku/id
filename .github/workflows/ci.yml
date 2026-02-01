@@ -67,11 +67,8 @@ jobs:
       - name: Test id with GitHub Actions OIDC
         shell: python
         run: |
-          import id, json
-
-          # Make sure we get a token
-          token = id.detect_credential("my-audience")
-          assert token
+          import id
+          assert id.detect_credential("my-audience")
 
   all-tests-pass:
     if: always()
