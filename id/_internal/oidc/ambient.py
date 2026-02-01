@@ -54,8 +54,7 @@ def _request(
     fields: dict[str, str] | None = None,
     **kwargs: Any,
 ) -> urllib3.BaseHTTPResponse:
-    """request wrapper that handles adding query parameters to URLs that may already have them
-    """
+    """request wrapper that handles adding query parameters to URLs that may already have them"""
     _encode_url_methods = {"DELETE", "GET", "HEAD", "OPTIONS"}
     if method.upper() in _encode_url_methods and fields:
         url_parts = list(urlparse(url))
