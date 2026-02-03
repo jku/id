@@ -39,7 +39,6 @@ def test_detect_credential_none(monkeypatch):
 
 
 def test_detect_credential(monkeypatch):
-    print(f"'{_GHA_TOKEN}'")
     detect_github = pretend.call_recorder(lambda audience: _GHA_TOKEN)
     monkeypatch.setattr(ambient, "detect_github", detect_github)
 
