@@ -62,10 +62,14 @@ def _validate_credential(credential: str, audience: str) -> None:
     except (ValueError, binascii.Error, json.decoder.JSONDecodeError) as e:
         raise AmbientCredentialError("Malformed token") from e
 
-    if not isinstance(payload_json, dict) or "aud" not in payload_json:
-        raise AmbientCredentialError("Malformed token payload")
+    if not isinstance(payload_json, dict):
+        raise AmbientCredentialError("Malformed token payload (JWT is not a JSON object)")
+    if "aud" not in payload_json:
+        raise AmbientCredentialError("Malformed token payload (audience claim is missing)")
     if payload_json["aud"] != audience:
-        raise AmbientCredentialError(f"Token audience mismatch (got {payload_json['aud']})")
+        raise AmbientCredentialError(
+            f"Token audience claim mismatch (expected {audience}, got {payload_json['aud']})"
+        )
 
 
 def detect_credential(audience: str) -> str | None:

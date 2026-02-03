@@ -52,7 +52,7 @@ def test_detect_credential_audience_mismatch(monkeypatch):
 
     with pytest.raises(
         ambient.AmbientCredentialError,
-        match=r"Token audience mismatch \(got sigstore\)",
+        match=r"Token audience claim mismatch \(expected my-audience, got sigstore\)",
     ):
         detect_credential("my-audience")
 
